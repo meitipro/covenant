@@ -1,0 +1,9 @@
+# Unit, end-to-end and runbook tests need only this:
+pytest>=8.0
+
+# Studio integration tests additionally need the GenLayer test runner.
+genlayer-test
+
+# scripts/verify_deployment.py lints the source it reads back off chain, and
+# needs the linter for that:
+# genvm-linter
