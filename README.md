@@ -12,13 +12,62 @@ decides "default". The contract counts.
 
 - **Contract:** [`contracts/covenant.py`](contracts/covenant.py)
 - **Tests:** `pip install pytest && pytest tests/ -q` - nothing else to install
-- **Deployed:** [`{address}`](https://explorer-studio.genlayer.com/address/{address}) on studionet
+- **Deployed:** [`0x19911E7D44Ff51cca345DFac48723B3A6C89338D`](https://explorer-studio.genlayer.com/address/0x19911E7D44Ff51cca345DFac48723B3A6C89338D) on studionet
 - **Deploying it yourself:** [DEPLOY.md](DEPLOY.md) - the contract, the demo, and the check to run before submitting
 - **Verify a deployment:** `python scripts/verify_deployment.py 0x...` - compares the
   on-chain source with this file and lints it
 - **Specification:** [CONTRACTS.md](CONTRACTS.md)
 - **Decisions:** [DECISIONS.md](DECISIONS.md)
 - **License:** MIT. Copy the agreement rule; that is what it is for.
+
+---
+
+## It is live, and every outcome is on chain
+
+Two facilities, five compliance reports on the first and one on the second.
+Every value below was read back from the chain with view calls, not copied from
+a local run.
+
+**The term loan**, three conditions frozen at open with a cure window of one
+report. The cash covenant is broken, cured, broken again and then left
+unremedied, and the window runs out:
+
+```
+report 1  2.4m  kept|kept|kept         compliant|compliant|compliant
+report 2  1.7m  broken|kept|kept       breach|compliant|compliant      remaining 1
+report 3  2.2m  cured|kept|kept        compliant|compliant|compliant   cures 1
+report 4  1.6m  broken|kept|kept       breach|compliant|compliant      breaches 2
+report 5  1.5m  unremedied|kept|kept   default|compliant|compliant     defaulted
+```
+
+Nobody declared the default. The window was one report, the breach was not
+cured in it, and the arithmetic did the rest. `facility(0)` records where it
+happened:
+
+```json
+{"status": "defaulted", "defaulted": true, "defaulted_condition": 0,
+ "defaulted_report": 4, "cure": 1, "conditions": 3, "reports": 5,
+ "judged": 5, "pending": 0}
+```
+
+The other two conditions stayed `compliant` throughout, on the same reports, in
+the same transactions. The leader's reason for the last one, stored and outside
+consensus: "Cash balance was below 2 million EUR; accounts were delivered within
+90 days; fleet is insured against total loss."
+
+**The revolving credit**, one condition and a window of two reports. The first
+report breaks it, and the lender waives the breach:
+
+```json
+{"name": "a cash balance of at least 1 million EUR at quarter end",
+ "state": "compliant", "remaining": 0, "breaches": 1, "cures": 0, "waivers": 1}
+```
+
+The breach stays on the record with the waiver beside it, and the facility is
+`active`. A later report that shows the balance under the floor would open a new
+breach like any other.
+
+Sixteen transactions, every one `FINALIZED`, none failed.
 
 ---
 

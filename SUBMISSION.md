@@ -58,12 +58,10 @@ one standalone primitive.
 ## On chain
 
 Deployed and exercised on studionet at
-[`{address}`](https://explorer-studio.genlayer.com/address/{address}).
-
-The values below are what the run in [DEPLOY.md](DEPLOY.md) is expected to
-produce - `tests/test_runbook.py` replays that run and asserts each of them - and
-every one is to be **read back from the chain with view calls afterwards** and
-replaced with what the chain actually says before this file is submitted.
+[`0x19911E7D44Ff51cca345DFac48723B3A6C89338D`](https://explorer-studio.genlayer.com/address/0x19911E7D44Ff51cca345DFac48723B3A6C89338D).
+Sixteen transactions, every one `FINALIZED`, none failed. Every value below was
+read back from the chain with view calls afterwards, not copied from a local
+run, and it is exactly what `tests/test_runbook.py` asserts for the same run.
 
 | # | Transaction | Result |
 |---|---|---|
@@ -81,8 +79,13 @@ replaced with what the chain actually says before this file is submitted.
 ### Reproducing the check
 
 ```bash
-python scripts/verify_deployment.py {address}
+python scripts/verify_deployment.py 0x19911E7D44Ff51cca345DFac48723B3A6C89338D
 ```
+
+Reads the source out of the deploy transaction, compares it with
+`contracts/covenant.py`, and runs `genvm-lint lint` on those bytes. It reports
+the deployed source as identical up to line endings, which pasting into the
+Studio editor rewrites and nothing runs.
 
 ---
 
@@ -106,7 +109,7 @@ Contract: https://github.com/meitipro/covenant/blob/main/contracts/covenant.py
 Spec:     https://github.com/meitipro/covenant/blob/main/CONTRACTS.md
 Decisions https://github.com/meitipro/covenant/blob/main/DECISIONS.md
 Tests:    https://github.com/meitipro/covenant/tree/main/tests
-Explorer: https://explorer-studio.genlayer.com/address/{address}
+Explorer: https://explorer-studio.genlayer.com/address/0x19911E7D44Ff51cca345DFac48723B3A6C89338D
 ```
 
 ---
